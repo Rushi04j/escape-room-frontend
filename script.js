@@ -418,3 +418,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start the game
     createDoors();
 });
+const backendUrl = "https://your-backend.vercel.app"; // Replace with actual backend URL
+
+async function getData() {
+  try {
+    const response = await fetch(`${backendUrl}/api/data`); // Example API route
+    const data = await response.json();
+    console.log("Data from backend:", data);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
+getData();
