@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Room: Code Challenges</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Login and Sign Up Buttons -->
+        <button id="login-button">Login</button>
+        <button id="signup-button">Sign Up</button>
+
+        <h1>THE ESCAPE ROOM : Code Challenges</h1>
+        
+        <div id="timer">
+            <div id="timer-background"></div>
+            <p>Time Remaining: <span id="time">05:00</span></p>
+        </div>
+        <div id="room-description">
+            <p>You are trapped in a room with 10 doors. Solve the coding challenges to unlock the doors and escape!</p>
+        </div>
+        <div id="doors">
+            <!-- Doors will be dynamically added here -->
+        </div>
+        <div id="challenge-modal" class="modal">
+            <div class="modal-content">
+                <span id="close-modal" class="close">&times;</span>
+                <h2 id="challenge-title"></h2>
+                <p id="challenge-description"></p>
+                <textarea id="code-input" placeholder="Write your code here..."></textarea>
+                <button id="submit-code">Submit</button>
+                <p id="code-result"></p>
+            </div>
+        </div>
+        
+        <!-- Login Modal -->
+        <div id="login-modal" class="modal">
+            <div class="modal-content">
+                <span id="close-login-modal" class="close">&times;</span>
+                <h2>Login</h2>
+                <form id="login-form">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                    <button type="submit">Login</button>
+                </form>
+                <p id="login-message"></p>
+            </div>
+        </div>
+
+        <!-- Sign Up Modal -->
+        <div id="signup-modal" class="modal">
+            <div class="modal-content">
+                <span id="close-signup-modal" class="close">&times;</span>
+                <h2>Sign Up</h2>
+                <form id="signup-form">
+                    <label for="signup-username">Username:</label>
+                    <input type="text" id="signup-username" name="signup-username" required>
+                    <label for="signup-password">Create Password:</label>
+                    <input type="password" id="signup-password" name="signup-password" required>
+                    <label for="signup-email">Email:</label>
+                    <input type="email" id="signup-email" name="signup-email" required>
+                    <button type="submit">Sign Up</button>
+                </form>
+                <p id="signup-message"></p>
+            </div>
+        </div>
+
+        <!-- Leaderboard Modal -->
+        <div id="leaderboard-modal" class="modal">
+            <div class="modal-content">
+                <span id="close-leaderboard-modal" class="close">&times;</span>
+                <h2>Leaderboard</h2>
+                <p>Congratulations! You escaped the room in <span id="total-time"></span> seconds.</p>
+                <table id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Door</th>
+                            <th>Time Taken (seconds)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Leaderboard rows will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
