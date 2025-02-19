@@ -61,27 +61,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Sign Up functionality
-    signupButton.addEventListener('click', () => {
-        signupModal.style.display = 'flex';
+    // Signup functionality
+    signupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = document.getElementById('signup-username').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+
+        signupUser(username, email, password);
     });
 
     closeSignupModal.addEventListener('click', () => {
         signupModal.style.display = 'none';
-    });
-
-    signupForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const username = document.getElementById('signup-username').value;
-        const password = document.getElementById('signup-password').value;
-        const email = document.getElementById('signup-email').value;
-
-        // Simulate signup success
-        signupMessage.textContent = "Sign up successful!";
-        signupMessage.style.color = "green";
-        setTimeout(() => {
-            signupModal.style.display = 'none';
-        }, 1000);
     });
 
     // Timer functionality
@@ -418,16 +409,65 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start the game
     createDoors();
 });
-const backendUrl = "https://your-backend.vercel.app"; // Replace with actual backend URL
 
-async function getData() {
-  try {
-    const response = await fetch(`${backendUrl}/api/data`); // Example API route
-    const data = await response.json();
-    console.log("Data from backend:", data);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
+const backendURL = "https://escape-room-backend.vercel.app";
+
+// Function for user signup
+function signupUser(username, email, password) {
+    fetch(`${backendURL}/api/auth/signup`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, email, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Signup Response:", data);
+        if (data.message === "User registered successfully! Please log in.") {
+            signupMessage.textContent = "Sign up successful!";
+            signupMessage.style.color = "green";
+            setTimeout(() => {
+                document.getElementById('signup-modal').style.display = 'none';
+            }, 1000);
+        } else {
+            signupMessage.textContent = data.message || "Sign up failed.";
+            signupMessage.style.color = "red";
+        }
+    })
+    .catch(error => {
+        console.error("Signup Error:", error);
+        signupMessage.textContent = "An error occurred during signup.";
+        signupMessage.style.color = "red";
+    });
 }
 
-getData();
+// Function for user login
+function loginUser(email, password) {
+    fetch(`${backendURL}/api/auth/login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Login Response:", data);
+        if (data.message === "Login successful!") {
+            loginMessage.textContent = "Login successful!";
+            loginMessage.style.color = "green";
+            setTimeout(() => {
+                document.getElementById('login-modal').style.display = 'none';
+            }, 1000);
+        } else {
+            loginMessage.textContent = data.message || "Invalid email or password.";
+            loginMessage.style.color = "red";
+        }
+    })
+    .catch(error => {
+        console.error("Login Error:", error);
+        loginMessage.textContent = "An error occurred during login.";
+        loginMessage.style.color = "red";
+    });
+}
