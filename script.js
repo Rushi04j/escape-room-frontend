@@ -10,17 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const timerDisplay = document.getElementById('time');
     const timerContainer = document.getElementById('timer');
 
-    const loginButton = document.getElementById('login-button');
-    const signupButton = document.getElementById('signup-button');
-    const loginModal = document.getElementById('login-modal');
-    const signupModal = document.getElementById('signup-modal');
-    const closeLoginModal = document.getElementById('close-login-modal');
-    const closeSignupModal = document.getElementById('close-signup-modal');
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
-    const loginMessage = document.getElementById('login-message');
-    const signupMessage = document.getElementById('signup-message');
-
     const leaderboardModal = document.getElementById('leaderboard-modal');
     const closeLeaderboardModal = document.getElementById('close-leaderboard-modal');
     const leaderboardTableBody = document.querySelector('#leaderboard-table tbody');
@@ -34,46 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let startTime;
     let doorTimes = []; // Array to store time taken for each door
     let doorStartTime; // Track start time for each door
-
-    // Login functionality
-    loginButton.addEventListener('click', () => {
-        loginModal.style.display = 'flex';
-    });
-
-    closeLoginModal.addEventListener('click', () => {
-        loginModal.style.display = 'none';
-    });
-
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-
-        if (username === "user" && password === "password") {
-            loginMessage.textContent = "Login successful!";
-            loginMessage.style.color = "green";
-            setTimeout(() => {
-                loginModal.style.display = 'none';
-            }, 1000);
-        } else {
-            loginMessage.textContent = "Invalid username or password.";
-            loginMessage.style.color = "red";
-        }
-    });
-
-    // Signup functionality
-    signupForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const username = document.getElementById('signup-username').value;
-        const email = document.getElementById('signup-email').value;
-        const password = document.getElementById('signup-password').value;
-
-        signupUser(username, email, password);
-    });
-
-    closeSignupModal.addEventListener('click', () => {
-        signupModal.style.display = 'none';
-    });
 
     // Timer functionality
     function startTimer() {
@@ -118,7 +67,15 @@ document.addEventListener('DOMContentLoaded', () => {
         doorTimes = []; // Reset door times
         createDoors();
     }
-
+    document.addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem("token");
+    
+        if (!token) {
+            alert("You must log in first!");
+            window.location.href = "https://landingpage-hazel-mu.vercel.app"; // Redirect to landing page
+        }
+    });
+    
     // Challenges
     const challenges = [
         // Door 1: MCQ (Guess the Output)
@@ -410,64 +367,4 @@ document.addEventListener('DOMContentLoaded', () => {
     createDoors();
 });
 
-const backendURL = "https://escape-room-backend.vercel.app";
 
-// Function for user signup
-function signupUser(username, email, password) {
-    fetch(`${backendURL}/api/auth/signup`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ username, email, password })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Signup Response:", data);
-        if (data.message === "User registered successfully! Please log in.") {
-            signupMessage.textContent = "Sign up successful!";
-            signupMessage.style.color = "green";
-            setTimeout(() => {
-                document.getElementById('signup-modal').style.display = 'none';
-            }, 1000);
-        } else {
-            signupMessage.textContent = data.message || "Sign up failed.";
-            signupMessage.style.color = "red";
-        }
-    })
-    .catch(error => {
-        console.error("Signup Error:", error);
-        signupMessage.textContent = "An error occurred during signup.";
-        signupMessage.style.color = "red";
-    });
-}
-
-// Function for user login
-function loginUser(email, password) {
-    fetch(`${backendURL}/api/auth/login`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Login Response:", data);
-        if (data.message === "Login successful!") {
-            loginMessage.textContent = "Login successful!";
-            loginMessage.style.color = "green";
-            setTimeout(() => {
-                document.getElementById('login-modal').style.display = 'none';
-            }, 1000);
-        } else {
-            loginMessage.textContent = data.message || "Invalid email or password.";
-            loginMessage.style.color = "red";
-        }
-    })
-    .catch(error => {
-        console.error("Login Error:", error);
-        loginMessage.textContent = "An error occurred during login.";
-        loginMessage.style.color = "red";
-    });
-}
