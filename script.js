@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const leaderboardTableBody = document.querySelector('#leaderboard-table tbody');
     const totalTimeDisplay = document.getElementById('total-time');
 
-    let timeRemaining = 300; // 5 minutes in seconds
+    let timeRemaining; // Timer will be set based on the difficulty of the question
     let timerInterval;
     let currentDoor = 1;
     let doors = [];
@@ -25,9 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let doorStartTime; // Track start time for each door
 
     // Timer functionality
-    function startTimer() {
+    function startTimer(timeLimit) {
         if (!isTimerRunning) {
             isTimerRunning = true;
+            timeRemaining = timeLimit; // Set the timer based on the difficulty level
             timerContainer.style.display = 'block';
             startTime = Date.now();
             timerInterval = setInterval(() => {
@@ -50,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resetTimer() {
-        timeRemaining = 300;
+        timeRemaining = 0; // Reset to 0, as the timer will be set dynamically
         updateTimerDisplay();
     }
 
@@ -67,67 +68,75 @@ document.addEventListener('DOMContentLoaded', () => {
         doorTimes = []; // Reset door times
         createDoors();
     }
+
     document.addEventListener("DOMContentLoaded", () => {
         const token = localStorage.getItem("token");
-    
+
         if (!token) {
             alert("You must log in first!");
             window.location.href = "https://landingpage-hazel-mu.vercel.app"; // Redirect to landing page
         }
     });
-    
-    // Challenges
+
+    // Challenges with difficulty-based time limits
     const challenges = [
-        // Door 1: MCQ (Guess the Output)
+        // Door 1: MCQ (Guess the Output) - Easy (1 minute)
         {
             title: "Door 1: Guess the Output",
             description: "What will be the output of the following code?\n\nconst x = 5;\nconst y = 3;\nconsole.log(x + y);",
             type: "mcq",
             options: ["8", "53", "35", "Error"],
             correctAnswer: "8",
+            timeLimit: 60, // 1 minute
         },
-        // Door 2: MCQ (Guess the Output)
+        // Door 2: MCQ (Guess the Output) - Easy (1 minute)
         {
             title: "Door 2: Guess the Output",
             description: "What will be the output of the following code?\n\nconst arr = [1, 2, 3];\narr.push(4);\nconsole.log(arr.length);",
             type: "mcq",
             options: ["3", "4", "5", "Error"],
             correctAnswer: "4",
+            timeLimit: 60, // 1 minute
         },
-        // Door 3: MCQ (Guess the Output)
+        // Door 3: MCQ (Guess the Output) - Easy (1 minute)
         {
             title: "Door 3: Guess the Output",
             description: "What will be the output of the following code?\n\nconst str = 'Hello';\nconsole.log(str.toUpperCase());",
             type: "mcq",
             options: ["hello", "HELLO", "Hello", "Error"],
             correctAnswer: "HELLO",
+            timeLimit: 60, // 1 minute
         },
-        // Door 4: Fill in the Blanks
+        // Door 4: Fill in the Blanks - Medium (2 minutes)
         {
             title: "Door 4: Fill in the Blanks",
             description: "Complete the code to calculate the sum of two numbers.\n\nfunction sum(a, b) {\n  return a ___ b;\n}",
             type: "fillInTheBlank",
             correctAnswer: "+",
+            timeLimit: 120, // 2 minutes
         },
-        // Door 5: Fill in the Blanks
+        // Door 5: Fill in the Blanks - Medium (2 minutes)
         {
             title: "Door 5: Fill in the Blanks",
             description: "Complete the code to check if a number is even.\n\nfunction isEven(num) {\n  return num ___ 2 === 0;\n}",
             type: "fillInTheBlank",
             correctAnswer: "%",
+            timeLimit: 120, // 2 minutes
         },
-        // Door 6: Fill in the Blanks
+        // Door 6: Fill in the Blanks - Medium (2 minutes)
         {
             title: "Door 6: Fill in the Blanks",
             description: "Complete the code to reverse a string.\n\nfunction reverseString(str) {\n  return str.___('').___('');\n}",
             type: "fillInTheBlank",
             correctAnswer: "split,reverse,join",
+            timeLimit: 120, // 2 minutes
         },
-        // Door 7: Write Full Code
+        // Door 7: Write Full Code - Hard (3 minutes)
         {
             title: "Door 7: Write Full Code",
             description: "Write a function `factorial(n)` that returns the factorial of a number.",
             type: "writeCode",
+            timeLimit: 180, // 3 minutes
             test: (code) => {
                 try {
                     const func = new Function(`${code}; return factorial(5);`);
@@ -137,11 +146,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             },
         },
-        // Door 8: Write Full Code
+        // Door 8: Write Full Code - Hard (3 minutes)
         {
             title: "Door 8: Write Full Code",
             description: "Write a function `isPalindrome(str)` that returns `true` if the input string is a palindrome, otherwise `false`.",
             type: "writeCode",
+            timeLimit: 180, // 3 minutes
             test: (code) => {
                 try {
                     const func = new Function(`${code}; return isPalindrome('racecar');`);
@@ -151,11 +161,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             },
         },
-        // Door 9: Write Full Code
+        // Door 9: Write Full Code - Hard (3 minutes)
         {
             title: "Door 9: Write Full Code",
             description: "Write a function `findLargest(arr)` that returns the largest number in an array.",
             type: "writeCode",
+            timeLimit: 180, // 3 minutes
             test: (code) => {
                 try {
                     const func = new Function(`${code}; return findLargest([1, 5, 3, 9, 2]);`);
@@ -165,11 +176,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             },
         },
-        // Door 10: Write Full Code
+        // Door 10: Write Full Code - Hard (3 minutes)
         {
             title: "Door 10: Write Full Code",
             description: "Write a function `countVowels(str)` that returns the number of vowels in the input string.",
             type: "writeCode",
+            timeLimit: 180, // 3 minutes
             test: (code) => {
                 try {
                     const func = new Function(`${code}; return countVowels('hello world');`);
@@ -195,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
             door.addEventListener('click', () => {
                 if (i === currentDoor) {
                     doorStartTime = Date.now(); // Track start time for the door
-                    startTimer();
+                    startTimer(challenges[i - 1].timeLimit); // Start timer with the challenge's time limit
                     openChallengeModal(challenges[i - 1]);
                     door.classList.add('open'); // Add open animation
                 }
@@ -366,5 +378,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start the game
     createDoors();
 });
-
-
