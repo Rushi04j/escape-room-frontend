@@ -8,28 +8,36 @@
 </head>
 <body>
     <div id="game-container">
-        <h1>THE ESCAPE ROOM : Code Challenges</h1>
+        <h1>THE ESCAPE ROOM: Code Challenges</h1>
         
+        <!-- Timer Section -->
         <div id="timer">
             <div id="timer-background"></div>
             <p>Time Remaining: <span id="time">05:00</span></p>
         </div>
+
+        <!-- Room Description -->
         <div id="room-description">
             <p>You are trapped in a room with 10 doors. Solve the coding challenges to unlock the doors and escape!</p>
         </div>
+
+        <!-- Doors Section -->
         <div id="doors">
             <!-- Doors will be dynamically added here -->
         </div>
+
+        <!-- Challenge Modal -->
         <div id="challenge-modal" class="modal">
             <div class="modal-content">
                 <span id="close-modal" class="close">&times;</span>
                 <h2 id="challenge-title"></h2>
                 <p id="challenge-description"></p>
-                <textarea id="code-input" placeholder="Write your code here..."></textarea>
+                <textarea id="code-input" placeholder="Write your code here..." rows="10" cols="50"></textarea>
                 <button id="submit-code">Submit</button>
                 <p id="code-result"></p>
             </div>
         </div>
+
         <!-- Leaderboard Modal -->
         <div id="leaderboard-modal" class="modal">
             <div class="modal-content">

@@ -69,15 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         createDoors();
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-            alert("You must log in first!");
-            window.location.href = "https://landingpage-hazel-mu.vercel.app"; // Redirect to landing page
-        }
-    });
-
     // Challenges with difficulty-based time limits
     const challenges = [
         // Door 1: MCQ (Guess the Output) - Easy (1 minute)
@@ -199,11 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 1; i <= 10; i++) {
             const door = document.createElement('div');
             door.className = i === 1 ? 'door unlocked' : 'door locked';
-            if (i === 1) {
-                door.textContent = "JavaScript";
-            } else {
-                door.textContent = `Door ${i}`;
-            }
+            door.textContent = i === 1 ? "JavaScript" : `Door ${i}`;
             door.addEventListener('click', () => {
                 if (i === currentDoor) {
                     doorStartTime = Date.now(); // Track start time for the door
@@ -251,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
             optionsContainer.id = 'mcq-options';
             challengeDescription.appendChild(optionsContainer);
 
-            challenge.options.forEach((option, index) => {
+            challenge.options.forEach((option) => {
                 const optionButton = document.createElement('button');
                 optionButton.textContent = option;
                 optionButton.addEventListener('click', () => {
