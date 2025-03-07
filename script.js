@@ -9,11 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModal = document.getElementById('close-modal');
     const timerDisplay = document.getElementById('time');
     const timerContainer = document.getElementById('timer');
-
+    const hintButton = document.getElementById('hint-button');
+    const hintContainer = document.getElementById('hint-container');
+    const hintText = document.getElementById('hint-text');
     const leaderboardModal = document.getElementById('leaderboard-modal');
     const closeLeaderboardModal = document.getElementById('close-leaderboard-modal');
     const leaderboardTableBody = document.querySelector('#leaderboard-table tbody');
     const totalTimeDisplay = document.getElementById('total-time');
+    const logoutButton = document.getElementById('logout-button');
 
     let timeRemaining; // Timer will be set based on the difficulty of the question
     let timerInterval;
@@ -79,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             options: ["8", "53", "35", "Error"],
             correctAnswer: "8",
             timeLimit: 60, // 1 minute
+            hint: "The '+' operator adds two numbers together."
         },
         // Door 2: MCQ (Guess the Output) - Easy (1 minute)
         {
@@ -88,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             options: ["3", "4", "5", "Error"],
             correctAnswer: "4",
             timeLimit: 60, // 1 minute
+            hint: "The 'push' method adds an element to the end of an array."
         },
         // Door 3: MCQ (Guess the Output) - Easy (1 minute)
         {
@@ -97,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             options: ["hello", "HELLO", "Hello", "Error"],
             correctAnswer: "HELLO",
             timeLimit: 60, // 1 minute
+            hint: "The 'toUpperCase' method converts a string to uppercase."
         },
         // Door 4: Fill in the Blanks - Medium (2 minutes)
         {
@@ -105,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             type: "fillInTheBlank",
             correctAnswer: "+",
             timeLimit: 120, // 2 minutes
+            hint: "The '+' operator is used to add two numbers."
         },
         // Door 5: Fill in the Blanks - Medium (2 minutes)
         {
@@ -113,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             type: "fillInTheBlank",
             correctAnswer: "%",
             timeLimit: 120, // 2 minutes
+            hint: "The '%' operator returns the remainder of a division."
         },
         // Door 6: Fill in the Blanks - Medium (2 minutes)
         {
@@ -121,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
             type: "fillInTheBlank",
             correctAnswer: "split,reverse,join",
             timeLimit: 120, // 2 minutes
+            hint: "The 'split' method splits a string into an array of characters."
         },
         // Door 7: Write Full Code - Hard (3 minutes)
         {
@@ -136,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return false;
                 }
             },
+            hint: "The factorial of a number is the product of all positive integers less than or equal to that number."
         },
         // Door 8: Write Full Code - Hard (3 minutes)
         {
@@ -151,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return false;
                 }
             },
+            hint: "A palindrome is a string that reads the same backward as forward."
         },
         // Door 9: Write Full Code - Hard (3 minutes)
         {
@@ -166,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return false;
                 }
             },
+            hint: "You can use a loop to iterate through the array."
         },
         // Door 10: Write Full Code - Hard (3 minutes)
         {
@@ -181,6 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return false;
                 }
             },
+            hint: "Vowels in English are 'a', 'e', 'i', 'o', 'u'."
         },
     ];
 
@@ -221,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
         challengeDescription.textContent = challenge.description;
         codeInput.value = '';
         codeResult.textContent = '';
+        hintContainer.style.display = 'none';
 
         // Clear previous content
         codeInput.style.display = 'block';
@@ -325,6 +339,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Hint system
+        hintButton.addEventListener('click', () => {
+            hintContainer.style.display = 'block';
+            hintText.textContent = challenge.hint;
+        });
+
         challengeModal.style.display = 'flex';
     }
 
@@ -352,6 +372,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show the leaderboard modal
         leaderboardModal.style.display = 'flex';
     }
+
+    // Logout functionality
+    logoutButton.addEventListener('click', () => {
+        // Redirect to the logout page (replace 'logout.html' with your actual logout page)
+        window.location.href = 'logout.html';
+    });
 
     closeModal.addEventListener('click', () => {
         challengeModal.style.display = 'none';
