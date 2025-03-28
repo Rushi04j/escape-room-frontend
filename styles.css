@@ -364,5 +364,24 @@ body {
   #mcq-options button:hover {
     background-color: #666;
   }
+  #main-logout-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #941818;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    z-index: 100;
+  }
+  
+  #main-logout-button:hover {
+    background-color: #666;
+  }
   
   
