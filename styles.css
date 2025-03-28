@@ -7,26 +7,30 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-image: url('images/background.jpg'); /* Main background image */
+    background-image: url("images/background.jpg"); /* Main background image */
     background-size: cover;
     background-position: center;
-}
-
-#game-container {
+  }
+  
+  #game-container {
     text-align: center;
     background-color: #1c1b1b;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     animation: fadeIn 1s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-#timer {
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  #timer {
     position: fixed;
     top: 20px;
     left: 50%;
@@ -42,9 +46,9 @@ body {
     z-index: 1000;
     display: none;
     animation: slideDown 0.5s ease-in-out;
-}
-
-#timer-background {
+  }
+  
+  #timer-background {
     position: absolute;
     top: 0;
     left: 0;
@@ -53,73 +57,88 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 50px;
     z-index: -1;
-}
-
-#time {
+  }
+  
+  #time {
     font-size: 16px;
     color: #fff;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-@keyframes slideDown {
-    from { top: -100px; }
-    to { top: 20px; }
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-#timer.low-time {
+  }
+  
+  @keyframes slideDown {
+    from {
+      top: -100px;
+    }
+    to {
+      top: 20px;
+    }
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  #timer.low-time {
     animation: pulse 1s infinite;
-}
-
-#room-description {
+  }
+  
+  #room-description {
     margin-bottom: 20px;
     animation: fadeIn 1.5s ease-in-out;
     font-weight: bold;
-}
-
-#doors {
+  }
+  
+  #doors {
     display: flex;
     justify-content: center;
     gap: 10px;
     flex-wrap: wrap;
-}
-
-.door {
-    background-color: #941818; /* Updated color for JavaScript button */
+  }
+  
+  .door {
+    background-color: #941818; /* Same color for all buttons */
     padding: 20px;
     border-radius: 20px;
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.3s, background-color 0.3s;
     animation: bounceIn 0.5s ease-in-out;
-}
-
-@keyframes bounceIn {
-    from { transform: scale(0); }
-    to { transform: scale(1); }
-}
-
-.door.locked {
+    min-width: 120px;
+  }
+  
+  @keyframes bounceIn {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  
+  .door.locked {
     background-color: #333;
     cursor: not-allowed;
-}
-
-.door.unlocked {
-    background-color: #555;
+  }
+  
+  .door.unlocked {
+    background-color: #941818;
     cursor: pointer;
-}
-
-.door:hover:not(.locked) {
+  }
+  
+  .door:hover:not(.locked) {
     background-color: #666;
     transform: scale(1.1);
-}
-
-.modal {
+  }
+  
+  .modal {
     display: none;
     position: fixed;
     top: 0;
@@ -130,9 +149,9 @@ body {
     justify-content: center;
     align-items: center;
     animation: fadeIn 0.5s ease-in-out;
-}
-
-.modal-content {
+  }
+  
+  .modal-content {
     background-color: #333;
     padding: 20px;
     border-radius: 10px;
@@ -140,25 +159,29 @@ body {
     max-width: 500px;
     text-align: center;
     animation: slideUp 0.5s ease-in-out;
-}
-
-@keyframes slideUp {
-    from { transform: translateY(50px); }
-    to { transform: translateY(0); }
-}
-
-.close {
+  }
+  
+  @keyframes slideUp {
+    from {
+      transform: translateY(50px);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  .close {
     float: right;
     cursor: pointer;
     font-size: 24px;
     transition: color 0.3s;
-}
-
-.close:hover {
+  }
+  
+  .close:hover {
     color: #ff5555;
-}
-
-#code-input {
+  }
+  
+  #code-input {
     width: 100%;
     height: 100px;
     margin-top: 10px;
@@ -167,30 +190,31 @@ body {
     border: none;
     background-color: #444;
     color: #fff;
-}
-
-#submit-code {
+  }
+  
+  #submit-code {
     margin-top: 10px;
     padding: 10px 20px;
-    background-color: #941818; /* Updated color for submit button */
+    background-color: #941818; /* Same color as the door buttons */
     color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-#submit-code:hover {
+  }
+  
+  #submit-code:hover {
     background-color: #666;
-}
-
-#code-result {
+  }
+  
+  #code-result {
     margin-top: 10px;
     font-weight: bold;
     animation: fadeIn 0.5s ease-in-out;
-}
-
-#login-button, #signup-button {
+  }
+  
+  #login-button,
+  #signup-button {
     position: absolute;
     top: 20px;
     right: 20px;
@@ -203,75 +227,83 @@ body {
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-#login-button:hover, #signup-button:hover {
+  }
+  
+  #login-button:hover,
+  #signup-button:hover {
     background-color: #666;
-}
-
-#signup-button {
+  }
+  
+  #signup-button {
     right: 120px; /* Positioned to the left of the login button */
-}
-
-#login-form, #signup-form {
+  }
+  
+  #login-form,
+  #signup-form {
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
-
-#login-form input, #signup-form input {
+  }
+  
+  #login-form input,
+  #signup-form input {
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
     background-color: #444;
     color: #fff;
-}
-
-#login-form button, #signup-form button {
+  }
+  
+  #login-form button,
+  #signup-form button {
     padding: 10px;
     background-color: #555;
     color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-}
-
-#login-form button:hover, #signup-form button:hover {
+  }
+  
+  #login-form button:hover,
+  #signup-form button:hover {
     background-color: #666;
-}
-
-#login-message, #signup-message {
+  }
+  
+  #login-message,
+  #signup-message {
     margin-top: 10px;
     font-weight: bold;
     animation: fadeIn 0.5s ease-in-out;
-}
-/* Add this to your existing CSS */
-#leaderboard-modal {
+  }
+  
+  #leaderboard-modal {
     display: none;
-}
-
-#leaderboard-table {
+  }
+  
+  #leaderboard-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-}
-
-#leaderboard-table th, #leaderboard-table td {
+  }
+  
+  #leaderboard-table th,
+  #leaderboard-table td {
     border: 1px solid #555;
     padding: 10px;
     text-align: center;
-}
-
-#leaderboard-table th {
+  }
+  
+  #leaderboard-table th {
     background-color: #941818;
     color: #fff;
-}
-
-#leaderboard-table td {
+  }
+  
+  #leaderboard-table td {
     background-color: #444;
     color: #fff;
-}/* Add this to your existing CSS */
-#hint-button {
+  }
+  
+  #hint-button {
     margin-top: 10px;
     padding: 10px 20px;
     background-color: #941818;
@@ -280,23 +312,23 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-#hint-button:hover {
+  }
+  
+  #hint-button:hover {
     background-color: #666;
-}
-
-#hint-container {
+  }
+  
+  #hint-container {
     margin-top: 10px;
     animation: fadeIn 0.5s ease-in-out;
-}
-
-#hint-text {
+  }
+  
+  #hint-text {
     font-weight: bold;
     color: #fff;
-}
-/* Add this to your existing CSS */
-#logout-button {
+  }
+  
+  #logout-button {
     margin-top: 20px;
     padding: 10px 20px;
     background-color: #941818;
@@ -305,8 +337,32 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-#logout-button:hover {
+  }
+  
+  #logout-button:hover {
     background-color: #666;
-}
+  }
+  
+  /* Styling for MCQ options */
+  #mcq-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  #mcq-options button {
+    padding: 10px 20px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  #mcq-options button:hover {
+    background-color: #666;
+  }
+  
+  
