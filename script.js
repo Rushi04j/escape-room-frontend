@@ -19,6 +19,49 @@ document.addEventListener("DOMContentLoaded", () => {
   const totalTimeDisplay = document.getElementById("total-time");
   const logoutButton = document.getElementById("logout-button");
 
+  // Custom Alert Modal Function
+  const customAlert = document.getElementById("customAlert");
+  const customAlertTitle = document.getElementById("customAlertTitle");
+  const customAlertMessage = document.getElementById("customAlertMessage");
+  const customAlertClose = document.getElementById("customAlertClose");
+
+  function showCustomAlert(title, message) {
+    customAlertTitle.textContent = title;
+    customAlertMessage.textContent = message;
+    customAlert.classList.remove("hidden");
+    setTimeout(() => {
+        customAlert.classList.add("active");
+    }, 10);
+  }
+
+  if (customAlertClose) {
+    customAlertClose.addEventListener("click", () => {
+        customAlert.classList.remove("active");
+        setTimeout(() => {
+            customAlert.classList.add("hidden");
+        }, 300);
+    });
+  }
+
+  // Jump Scare Elements
+  const jumpScare = document.getElementById("jumpScare");
+  const jumpScareSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-cinematic-horror-hit-with-echo-2486.mp3");
+  jumpScareSound.preload = "none";
+
+  function triggerJumpScare() {
+    if (!jumpScare) return;
+    jumpScare.classList.add("active");
+    if(jumpScareSound.play) {
+      jumpScareSound.play().catch(e => console.log(e));
+    }
+    setTimeout(() => {
+      jumpScare.classList.remove("active");
+    }, 800);
+  }
+
+  // Difficulty / Mistakes handling
+  let mistakeCount = 0;
+
   // Game State Variables
   let timeRemaining;
   let timerInterval;
@@ -45,7 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (timeRemaining <= 0) {
           clearInterval(timerInterval);
           isTimerRunning = false;
-          alert("Time's up! You failed to answer the question.");
+          showCustomAlert("Time's Up!", "You failed to answer the question before time ran out.");
+          triggerJumpScare();
           resetGame();
         }
       }, 1000);
@@ -1434,6 +1478,47 @@ document.addEventListener("DOMContentLoaded", () => {
       css: cssChallenges,
     };
 
+    const faangChallenges = {
+      javascript: [
+        { title: "FAANG Level 1", description: "Implement a deep clone resolving circular references in O(n) time.", type: "mcq", options: ["JSON.parse/stringify", "Object.assign", "structuredClone", "Recursion with a Set"], correctAnswer: "structuredClone", timeLimit: 30, hint: "Native deep clone API in modern browsers." },
+        { title: "FAANG Level 2", description: "Which array method mutates the original array?", type: "mcq", options: ["map()", "filter()", "splice()", "slice()"], correctAnswer: "splice()", timeLimit: 30, hint: "Used for removing or replacing elements in place." },
+        { title: "FAANG Level 3", description: "Determine the output of: `typeof null`", type: "mcq", options: ["null", "undefined", "object", "string"], correctAnswer: "object", timeLimit: 30, hint: "A historical JavaScript bug." },
+        { title: "FAANG Level 4", description: "How does the JS Event Loop prioritize tasks?", type: "mcq", options: ["Macrotasks first", "Microtasks first", "Synchronous first", "Random order"], correctAnswer: "Microtasks first", timeLimit: 30, hint: "Promises resolve before setTimeout." },
+        { title: "FAANG Level 5", description: "Fix the debounce signature:", type: "mcq", options: ["clearInterval(t)", "clearTimeout(t); t = setTimeout(()=>func(), wait)", "setTimeout(func, wait)", "wait()"], correctAnswer: "clearTimeout(t); t = setTimeout(()=>func(), wait)", timeLimit: 30, hint: "Clear existing timeout." }
+      ],
+      html: [
+         { title: "FAANG HTML 1", description: "Which method attaches a shadow root to an element?", type: "mcq", options: ["element.attachShadow()", "element.createShadowRoot()", "document.createShadow()", "new ShadowDOM(element)"], correctAnswer: "element.attachShadow()", timeLimit: 30, hint: "Web Components core API." },
+         { title: "FAANG HTML 2", description: "Which ARIA role is best for a custom modal?", type: "mcq", options: ["role='dialog'", "role='modal'", "role='popup'", "role='window'"], correctAnswer: "role='dialog'", timeLimit: 30, hint: "Indicates a dialog window." },
+         { title: "FAANG HTML 3", description: "Which attribute tells the browser to prioritize a resource?", type: "mcq", options: ["rel='prefetch'", "rel='preload'", "rel='preconnect'", "async"], correctAnswer: "rel='preload'", timeLimit: 30, hint: "Force early fetch." },
+         { title: "FAANG HTML 4", description: "How to allow cross-origin requests on a script tag?", type: "mcq", options: ["crossorigin='anonymous'", "Access-Control-Allow-Origin", "cors='true'", "origin='*'"], correctAnswer: "crossorigin='anonymous'", timeLimit: 30, hint: "HTML attribute for scripts." },
+         { title: "FAANG HTML 5", description: "Which meta tag helps prevent XSS?", type: "mcq", options: ["Content-Security-Policy", "X-XSS-Protection", "X-Frame-Options", "Strict-Transport-Security"], correctAnswer: "Content-Security-Policy", timeLimit: 30, hint: "CSP." }
+      ],
+      css: [
+         { title: "FAANG CSS 1", description: "Which selector has higher specificity: #id, .class.class.class, or div[attr='1']?", type: "mcq", options: ["#id", ".class.class.class", "div[attr='1']", "They are equal"], correctAnswer: "#id", timeLimit: 30, hint: "IDs win over classes." },
+         { title: "FAANG CSS 2", description: "Which property optimizes rendering by isolating subtrees?", type: "mcq", options: ["contain", "isolation", "transform-style", "will-change"], correctAnswer: "contain", timeLimit: 30, hint: "CSS Containment Module." },
+         { title: "FAANG CSS 3", description: "Which property triggers GPU hardware acceleration?", type: "mcq", options: ["transform: translateZ(0)", "will-change", "Both", "backface-visibility"], correctAnswer: "Both", timeLimit: 30, hint: "Composite layers." },
+         { title: "FAANG CSS 4", description: "Which of these does NOT create a Block Formatting Context?", type: "mcq", options: ["overflow: hidden", "float: left", "display: inline", "position: absolute"], correctAnswer: "display: inline", timeLimit: 30, hint: "Inlines don't contain floats." },
+         { title: "FAANG CSS 5", description: "Can CSS variables be animated using transitions natively?", type: "mcq", options: ["Yes", "No", "Only colors", "Only sizes"], correctAnswer: "No", timeLimit: 30, hint: "Requires Houdini @property definition." }
+      ]
+    };
+
+    function getDynamicChallenge(topic, index) {
+      const difficultySelect = document.getElementById("difficulty");
+      const diffVal = difficultySelect ? difficultySelect.value : "1";
+      
+      let baseChallenge;
+      if (diffVal === "0.5") {
+         baseChallenge = faangChallenges[topic][index % faangChallenges[topic].length];
+      } else {
+         baseChallenge = allChallenges[topic][index];
+      }
+
+      if (diffVal === "0.75") {
+         return { ...baseChallenge, title: "[HARD] " + baseChallenge.title, hint: "Hints are disabled in Hard Mode." };
+      }
+      return baseChallenge;
+    }
+
     // Game Functions
     function createDoors() {
       doorsContainer.innerHTML = "";
@@ -1453,7 +1538,7 @@ document.addEventListener("DOMContentLoaded", () => {
           startTime = Date.now();
           
           // Get the first challenge for the selected topic
-          const firstChallenge = allChallenges[currentTopic][0];
+          const firstChallenge = getDynamicChallenge(currentTopic, 0);
           if (firstChallenge) {
             openChallengeModal(firstChallenge);
             door.classList.add("open");
@@ -1485,8 +1570,13 @@ document.addEventListener("DOMContentLoaded", () => {
       // Show the modal before setting up challenge-specific UI
       challengeModal.style.display = "flex";
 
+      // Apply Difficulty Multiplier
+      const difficultySelect = document.getElementById("difficulty");
+      const multiplier = difficultySelect ? parseFloat(difficultySelect.value) : 1;
+      const finalTimeLimit = Math.max(10, Math.floor(challenge.timeLimit * multiplier));
+      
       // Start the timer for this question
-      startTimer(challenge.timeLimit);
+      startTimer(finalTimeLimit);
 
       // Set up UI based on challenge type
       if (challenge.type === "mcq") {
@@ -1556,13 +1646,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function handleCorrectAnswer() {
+      mistakeCount = 0; // Reset mistakes on success
       codeResult.textContent = "Correct! Next question.";
-      codeResult.style.color = "green";
+      codeResult.style.color = "lightgreen";
+      
+      const successSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-magical-coin-win-1936.mp3");
+      successSound.play().catch(() => {});
+
       setTimeout(() => {
         stopTimer();
         currentQuestionIndex++;
         if (currentQuestionIndex < 5) {
-          openChallengeModal(allChallenges[currentTopic][(currentDoor - 1) * 5 + currentQuestionIndex]);
+          openChallengeModal(getDynamicChallenge(currentTopic, (currentDoor - 1) * 5 + currentQuestionIndex));
         } else {
           challengeModal.style.display = "none";
           stopTimer();
@@ -1570,10 +1665,16 @@ document.addEventListener("DOMContentLoaded", () => {
           if (currentDoor < 10) {
             const doorTime = Math.floor((Date.now() - doorStartTime) / 1000);
             doorTimes.push({ door: currentDoor, topic: currentTopic, time: doorTime });
+
+            // Lore Feature
+            if (currentDoor === 3) showCustomAlert("Lore Discovered", "You found a torn note: 'The coding never stops. We haven't seen the sun in weeks...'");
+            if (currentDoor === 6) showCustomAlert("Lore Discovered", "A bloody terminal flickers: 'They feed on our syntax errors. Don't omit the semicolon.'");
+            if (currentDoor === 9) showCustomAlert("Lore Discovered", "A faint whisper: 'You're almost out. Whatever you do, don't look behind you.'");
+
             currentDoor++;
             currentQuestionIndex = 0;
             doorStartTime = Date.now();
-            openChallengeModal(allChallenges[currentTopic][(currentDoor - 1) * 5]);
+            openChallengeModal(getDynamicChallenge(currentTopic, (currentDoor - 1) * 5));
           } else {
             const doorTime = Math.floor((Date.now() - doorStartTime) / 1000);
             doorTimes.push({ door: currentDoor, topic: currentTopic, time: doorTime });
@@ -1584,15 +1685,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function handleIncorrectAnswer() {
-      codeResult.textContent = "Incorrect. Returning to Door 1.";
+      mistakeCount++;
+      codeResult.textContent = `Incorrect! Mistakes: ${mistakeCount}/3`;
       codeResult.style.color = "red";
+      
+      const failSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-spooky-forest-wind-1228.mp3");
+      failSound.play().catch(() => {});
+
       setTimeout(() => {
-        stopTimer();
-        currentDoor = 1;
-        currentQuestionIndex = 0;
-        doorStartTime = Date.now();
-        openChallengeModal(allChallenges[currentTopic][0]);
-      }, 1500);
+        isButtonDisabled = false; // Allow trying again
+
+        if (mistakeCount >= 3) {
+          // Trigger Jumpscare on 3 failed attempts
+          challengeModal.style.display = "none";
+          stopTimer();
+          triggerJumpScare();
+          showCustomAlert("You Disappointed Them", "Too many mistakes. You have been dragged back to the start.");
+          
+          mistakeCount = 0;
+          currentDoor = 1;
+          currentQuestionIndex = 0;
+          doorStartTime = Date.now();
+          openChallengeModal(getDynamicChallenge(currentTopic, 0));
+        }
+      }, 1000);
     }
 
     function showLeaderboard() {
@@ -1625,12 +1741,17 @@ document.addEventListener("DOMContentLoaded", () => {
       leaderboardModal.style.display = "none";
     });
 
+    // Dynamic URL for local testing switch
+    const landingUrl = (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost") 
+        ? "../landingpage/index.html" 
+        : "https://landingpage-hazel-mu.vercel.app/";
+
     logoutButton.addEventListener("click", () => {
-      window.location.href = "https://landingpage-hazel-mu.vercel.app/";
+      window.location.href = landingUrl;
     });
 
     document.getElementById("main-logout-button").addEventListener("click", () => {
-      window.location.href = "https://landingpage-hazel-mu.vercel.app/";
+      window.location.href = landingUrl;
     });
 
     // Initialize Game
