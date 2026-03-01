@@ -24,10 +24,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const customAlertTitle = document.getElementById("customAlertTitle");
   const customAlertMessage = document.getElementById("customAlertMessage");
   const customAlertClose = document.getElementById("customAlertClose");
+  let activeAlertCallback = null;
 
-  function showCustomAlert(title, message) {
+  function showCustomAlert(title, message, callback = null) {
     customAlertTitle.textContent = title;
     customAlertMessage.textContent = message;
+    activeAlertCallback = callback;
     customAlert.classList.remove("hidden");
     setTimeout(() => {
         customAlert.classList.add("active");
@@ -39,6 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
         customAlert.classList.remove("active");
         setTimeout(() => {
             customAlert.classList.add("hidden");
+            if (activeAlertCallback) {
+                activeAlertCallback();
+                activeAlertCallback = null;
+            }
         }, 300);
     });
   }
@@ -88,9 +94,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (timeRemaining <= 0) {
           clearInterval(timerInterval);
           isTimerRunning = false;
-          showCustomAlert("Time's Up!", "You failed to answer the question before time ran out.");
           triggerJumpScare();
-          resetGame();
+          showCustomAlert("Time's Up!", "You failed to answer the question before time ran out.", () => {
+            resetGame();
+          });
         }
       }, 1000);
     }
@@ -1510,7 +1517,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (diffVal === "0.5") {
          baseChallenge = faangChallenges[topic][index % faangChallenges[topic].length];
       } else {
-         baseChallenge = allChallenges[topic][index];
+         baseChallenge = allChallenges[topic][index % allChallenges[topic].length];
       }
 
       if (diffVal === "0.75") {
@@ -1667,14 +1674,30 @@ document.addEventListener("DOMContentLoaded", () => {
             doorTimes.push({ door: currentDoor, topic: currentTopic, time: doorTime });
 
             // Lore Feature
-            if (currentDoor === 3) showCustomAlert("Lore Discovered", "You found a torn note: 'The coding never stops. We haven't seen the sun in weeks...'");
-            if (currentDoor === 6) showCustomAlert("Lore Discovered", "A bloody terminal flickers: 'They feed on our syntax errors. Don't omit the semicolon.'");
-            if (currentDoor === 9) showCustomAlert("Lore Discovered", "A faint whisper: 'You're almost out. Whatever you do, don't look behind you.'");
+            let loreTriggered = false;
+            const openNextLevel = () => {
+              currentDoor++;
+              currentQuestionIndex = 0;
+              doorStartTime = Date.now();
+              openChallengeModal(getDynamicChallenge(currentTopic, (currentDoor - 1) * 5));
+            };
 
-            currentDoor++;
-            currentQuestionIndex = 0;
-            doorStartTime = Date.now();
-            openChallengeModal(getDynamicChallenge(currentTopic, (currentDoor - 1) * 5));
+            if (currentDoor === 3) {
+              loreTriggered = true;
+              showCustomAlert("Lore Discovered", "You found a torn note: 'The coding never stops. We haven't seen the sun in weeks...'", openNextLevel);
+            }
+            else if (currentDoor === 6) {
+              loreTriggered = true;
+              showCustomAlert("Lore Discovered", "A bloody terminal flickers: 'They feed on our syntax errors. Don't omit the semicolon.'", openNextLevel);
+            }
+            else if (currentDoor === 9) {
+              loreTriggered = true;
+              showCustomAlert("Lore Discovered", "A faint whisper: 'You're almost out. Whatever you do, don't look behind you.'", openNextLevel);
+            }
+
+            if (!loreTriggered) {
+              openNextLevel();
+            }
           } else {
             const doorTime = Math.floor((Date.now() - doorStartTime) / 1000);
             doorTimes.push({ door: currentDoor, topic: currentTopic, time: doorTime });
@@ -1686,28 +1709,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function handleIncorrectAnswer() {
       mistakeCount++;
-      codeResult.textContent = `Incorrect! Mistakes: ${mistakeCount}/3`;
+      codeResult.textContent = "Incorrect! Returning to the start...";
       codeResult.style.color = "red";
       
       const failSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-spooky-forest-wind-1228.mp3");
       failSound.play().catch(() => {});
 
       setTimeout(() => {
-        isButtonDisabled = false; // Allow trying again
+        isButtonDisabled = false;
 
-        if (mistakeCount >= 3) {
-          // Trigger Jumpscare on 3 failed attempts
-          challengeModal.style.display = "none";
-          stopTimer();
-          triggerJumpScare();
-          showCustomAlert("You Disappointed Them", "Too many mistakes. You have been dragged back to the start.");
-          
+        // Trigger Jumpscare instantly on a failed attempt
+        challengeModal.style.display = "none";
+        stopTimer();
+        triggerJumpScare();
+
+        showCustomAlert("You Disappointed Them", "Incorrect answer! You have been dragged back to the start.", () => {
           mistakeCount = 0;
           currentDoor = 1;
           currentQuestionIndex = 0;
           doorStartTime = Date.now();
           openChallengeModal(getDynamicChallenge(currentTopic, 0));
-        }
+        });
       }, 1000);
     }
 
