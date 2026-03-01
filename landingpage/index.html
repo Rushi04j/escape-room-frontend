@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Escape Room</title>
+    <link rel="preload" href="https://images.unsplash.com/photo-1505506874110-6a7a69069a08?ixlib=rb-4.0.3" as="image">
+    <link rel="preload" as="style" href="styles.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    
+    <!-- Blood Drips Overlay -->
+    <div class="blood-drips">
+        <div class="drip drip-1"></div>
+        <div class="drip drip-2"></div>
+        <div class="drip drip-3"></div>
+        <div class="drip drip-4"></div>
+        <div class="drip drip-5"></div>
+    </div>
+
+    <!-- Fog Effect -->
+    <div class="fog-container">
+        <div class="fog-img fog-img-first"></div>
+        <div class="fog-img fog-img-second"></div>
+    </div>
+
+    <!-- Flickering Light Effect -->
+    <div class="flicker-overlay"></div>
+    
+    <!-- Hidden Messages -->
+    <div class="hidden-messages">
+        <div class="hidden-message message-1">GET OUT WHILE YOU CAN</div>
+        <div class="hidden-message message-2">THEY'RE WATCHING YOU</div>
+        <div class="hidden-message message-3">DON'T LOOK BEHIND YOU</div>
+        <div class="hidden-message message-4">YOU'LL NEVER ESCAPE</div>
+        <div class="hidden-message message-5">HELP ME</div>
+    </div>
+
+    <!-- Landing Page -->
+    <div id="landingPage" class="landing-container">
+        <div class="overlay"></div>
+        <div class="landing-content">
+            <div class="glitch-container">
+                <h1 class="game-title glitch" data-text="THE ESCAPE ROOM">THE ESCAPE ROOM</h1>
+            </div>
+            <div class="title-separator"></div>
+            <p class="game-description typewriter">Trapped in an abandoned psychiatric ward, your sanity hangs by a thread. Can you escape?</p>
+            
+            <!-- Countdown Timer -->
+            <div class="countdown-container">
+                <p class="countdown-text">Time remaining to escape:</p>
+                <div class="countdown" id="countdown">
+                    <div class="countdown-item">
+                        <span id="hours">24</span>
+                        <span class="countdown-label">Hours</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span id="minutes">00</span>
+                        <span class="countdown-label">Minutes</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span id="seconds">00</span>
+                        <span class="countdown-label">Seconds</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="enterButton" class="enter-button">
+                <span class="button-text">Enter If You Dare</span>
+                <span class="button-hover"></span>
+            </button>
+            
+            <!-- Easter Egg Button -->
+            <div class="easter-egg-trigger" id="easterEggTrigger">?</div>
+        </div>
+    </div>
+
+    <!-- Login/Signup Page (Initially Hidden) -->
+    <div id="authPage" class="container hidden">
+        <div class="overlay"></div>
+        <div class="login-container">
+            <div class="header">
+                <div class="glitch-container">
+                    <h1 class="glitch" data-text="THE ESCAPE ROOM">THE ESCAPE ROOM</h1>
+                </div>
+                <p class="tagline">Escape the abandoned psychiatric ward... if you dare</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="login">Login</button>
+                <button class="tab-btn" data-tab="signup">Sign Up</button>
+            </div>
+
+            <form id="loginForm" class="form" method="POST" action="/login">
+                <div class="input-group">
+                    <input type="email" id="login-email" name="email" placeholder="Email" required aria-label="Email Address">
+                    <label for="login-email" class="floating-label">Email</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="login-password" name="password" placeholder="Password" required aria-label="Password">
+                    <label for="login-password" class="floating-label">Password</label>
+                </div>
+                <button type="submit" class="submit-btn">Enter The Room</button>
+                <a href="#" class="forgot-password">Forgot password?</a>
+            </form>
+
+            <form id="signupForm" class="form hidden" method="POST" action="/signup">
+                <div class="input-group">
+                    <input type="text" id="signup-username" name="username" placeholder="Username" required>
+                    <label for="signup-username" class="floating-label">Username</label>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="signup-email" name="email" placeholder="Email" required>
+                    <label for="signup-email" class="floating-label">Email</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="signup-password" name="password" placeholder="Password" required>
+                    <label for="signup-password" class="floating-label">Password</label>
+                    
+                    <!-- Password Strength Meter -->
+                    <div class="password-strength">
+                        <div class="strength-meter">
+                            <div class="strength-meter-fill" id="strengthMeter"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText">Password strength</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirm Password" required>
+                    <label for="confirm-password" class="floating-label">Confirm Password</label>
+                </div>
+                <button type="submit" class="submit-btn">Begin Your Journey</button>
+            </form>
+            
+            
+        </div>
+    </div>
+    
+    <!-- Immersive Custom Alert -->
+    <div id="customAlert" class="custom-alert hidden">
+        <div class="custom-alert-content">
+            <h2 id="customAlertTitle">Message</h2>
+            <p id="customAlertMessage">Something went wrong.</p>
+            <button id="customAlertClose">Understood</button>
+        </div>
+    </div>
+    
+    <!-- Jump Scare Container -->
+    <div id="jumpScare" class="jump-scare">
+        <img src="https://images.unsplash.com/photo-1509248961158-e54f6934749c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fGhvcnJvcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60" alt="Jump Scare">
+    </div>
+    
+    <!-- Mini Game -->
+    <div id="miniGame" class="mini-game hidden">
+        <div class="game-header">
+            <h2>Find the Key to Escape</h2>
+            <span id="closeGame" class="close-game">×</span>
+        </div>
+        <div class="game-container">
+            <div class="game-grid" id="gameGrid"></div>
+        </div>
+        <div class="game-footer">
+            <p>Clicks remaining: <span id="clicksRemaining">10</span></p>
+        </div>
+    </div>
+    
+    <script src="script.js" defer></script>
+    
+    <!-- Floating Elements -->
+    <div class="floating-elements">
+        <div class="floating-skull">💀</div>
+        <div class="floating-ghost">👻</div>
+        <div class="floating-spider">🕷️</div>
+        <div class="floating-bat">🦇</div>
+        <div class="floating-knife">🔪</div>
+    </div>
+
+    <!-- Animated Background Shapes -->
+    <div class="animated-bg">
+        <div class="bg-shape shape1"></div>
+        <div class="bg-shape shape2"></div>
+        <div class="bg-shape shape3"></div>
+        <div class="bg-shape shape4"></div>
+    </div>
+</body>
+</html>
+
