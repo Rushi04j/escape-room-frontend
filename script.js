@@ -18,6 +18,121 @@ document.addEventListener("DOMContentLoaded", () => {
   const leaderboardTableBody = document.querySelector("#leaderboard-table tbody");
   const totalTimeDisplay = document.getElementById("total-time");
   const logoutButton = document.getElementById("logout-button");
+  const dashboardButton = document.getElementById("dashboard-button");
+  const dashboardModal = document.getElementById("dashboard-modal");
+  const closeDashboardModal = document.getElementById("close-dashboard-modal");
+  const particleContainer = document.getElementById("particle-container");
+  const toastContainer = document.getElementById("toast-container");
+
+  // Auth and API
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "../landingpage/index.html"; // Protect route
+  }
+  const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+  const gameApiUrl = isLocal ? "http://localhost:5000/api/game" : "https://escape-room-backend.vercel.app/api/game";
+  let currentGameId = null;
+
+  // Generic Systems
+  function createToast(message, type = "info") {
+      const toast = document.createElement("div");
+      toast.className = `toast toast-${type}`;
+      toast.textContent = message;
+      Object.assign(toast.style, {
+          padding: "15px 20px",
+          borderRadius: "5px",
+          color: "white",
+          fontWeight: "bold",
+          boxShadow: "0 0 10px rgba(0,0,0,0.5)",
+          opacity: "0",
+          transform: "translateX(100%)",
+          transition: "all 0.3s ease",
+          background: type === "error" ? "rgba(180, 20, 20, 0.9)" : type === "success" ? "rgba(20, 180, 50, 0.9)" : "rgba(50, 50, 50, 0.9)"
+      });
+      toastContainer.appendChild(toast);
+      
+      requestAnimationFrame(() => {
+          toast.style.opacity = "1";
+          toast.style.transform = "translateX(0)";
+      });
+
+      setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateX(100%)";
+          setTimeout(() => toast.remove(), 300);
+      }, 3000);
+  }
+
+  function spawnParticles(x, y, color = "#941818", amount = 15) {
+      for (let i = 0; i < amount; i++) {
+          const p = document.createElement("div");
+          Object.assign(p.style, {
+              position: "absolute",
+              left: `${x}px`,
+              top: `${y}px`,
+              width: `${Math.random() * 8 + 4}px`,
+              height: `${Math.random() * 8 + 4}px`,
+              backgroundColor: color,
+              borderRadius: "50%",
+              pointerEvents: "none",
+              boxShadow: `0 0 10px ${color}`
+          });
+          particleContainer.appendChild(p);
+
+          const angle = Math.random() * Math.PI * 2;
+          const velocity = Math.random() * 100 + 50;
+          const tx = Math.cos(angle) * velocity;
+          const ty = Math.sin(angle) * velocity;
+
+          p.animate([
+              { transform: "translate(0, 0) scale(1)", opacity: 1 },
+              { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+          ], {
+              duration: Math.random() * 500 + 500,
+              easing: "cubic-bezier(0, .9, .57, 1)",
+              fill: "forwards"
+          }).onfinish = () => p.remove();
+      }
+  }
+
+  if (dashboardButton) {
+      dashboardButton.addEventListener("click", async () => {
+          dashboardModal.style.display = "block";
+          try {
+              const res = await fetch(`${gameApiUrl}/stats`, {
+                  headers: { "Authorization": `Bearer ${token}` }
+              });
+              const stats = await res.json();
+              document.getElementById("dashboard-stats").innerHTML = `
+                  <p>Games Played: <strong>${stats.gamesPlayed}</strong></p>
+                  <p>Completed Escapes: <strong>${stats.gamesCompleted}</strong></p>
+                  <p>Total Mistakes: <strong>${stats.totalMistakes}</strong></p>
+                  <p>Best Time: <strong>${stats.bestTime ? stats.bestTime + 's' : 'N/A'}</strong></p>
+              `;
+              
+              const historyTbody = document.querySelector("#history-table tbody");
+              historyTbody.innerHTML = "";
+              stats.recentHistory.forEach(run => {
+                  const tr = document.createElement("tr");
+                  tr.innerHTML = `
+                      <td>${new Date(run.startedAt).toLocaleDateString()}</td>
+                      <td style="color: ${run.status === 'completed' ? '#4CAF50' : '#f44336'}">${run.status.toUpperCase()}</td>
+                      <td>${run.status === 'completed' ? run.totalTimeTaken + 's' : run.doorsCompleted + ' doors'}</td>
+                      <td>${run.mistakes}</td>
+                  `;
+                  historyTbody.appendChild(tr);
+              });
+          } catch (e) {
+              console.error("Failed to fetch stats", e);
+          }
+      });
+  }
+
+  if (closeDashboardModal) {
+      closeDashboardModal.addEventListener("click", () => {
+          dashboardModal.style.display = "none";
+      });
+  }
 
   // Custom Alert Modal Function
   const customAlert = document.getElementById("customAlert");
@@ -87,6 +202,22 @@ document.addEventListener("DOMContentLoaded", () => {
       isTimerRunning = true;
       timeRemaining = timeLimit;
       timerContainer.style.display = "block";
+      
+      // Select difficulty modifier
+      const diffMod = document.getElementById("difficulty").value;
+
+      // Init Game Session Backend
+      fetch(`${gameApiUrl}/start`, {
+          method: 'POST',
+          headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ language: currentTopic, difficulty: diffMod })
+      }).then(res => res.json()).then(data => {
+          if (data.gameId) currentGameId = data.gameId;
+      }).catch(e => console.error("Could not start game session:", e));
+
       timerInterval = setInterval(() => {
         timeRemaining--;
         updateTimerDisplay();
@@ -95,6 +226,15 @@ document.addEventListener("DOMContentLoaded", () => {
           clearInterval(timerInterval);
           isTimerRunning = false;
           triggerJumpScare();
+          
+          if (currentGameId) {
+              fetch(`${gameApiUrl}/finish/${currentGameId}`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                  body: JSON.stringify({ status: 'failed' })
+              });
+          }
+
           showCustomAlert("Time's Up!", "You failed to answer the question before time ran out.", () => {
             resetGame();
           });
@@ -1660,6 +1800,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const successSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-magical-coin-win-1936.mp3");
       successSound.play().catch(() => {});
 
+      spawnParticles(window.innerWidth / 2, window.innerHeight / 2, "lightgreen", 20);
+      createToast("Challenge completed. You survive another minute.", "success");
+
       setTimeout(() => {
         stopTimer();
         currentQuestionIndex++;
@@ -1672,6 +1815,14 @@ document.addEventListener("DOMContentLoaded", () => {
           if (currentDoor < 10) {
             const doorTime = Math.floor((Date.now() - doorStartTime) / 1000);
             doorTimes.push({ door: currentDoor, topic: currentTopic, time: doorTime });
+
+            if (currentGameId) {
+                fetch(`${gameApiUrl}/progress/${currentGameId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ doorNumber: currentDoor, timeTakenForDoor: doorTime })
+                });
+            }
 
             // Lore Feature
             let loreTriggered = false;
@@ -1701,6 +1852,20 @@ document.addEventListener("DOMContentLoaded", () => {
           } else {
             const doorTime = Math.floor((Date.now() - doorStartTime) / 1000);
             doorTimes.push({ door: currentDoor, topic: currentTopic, time: doorTime });
+            
+            if (currentGameId) {
+                fetch(`${gameApiUrl}/progress/${currentGameId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ doorNumber: currentDoor, timeTakenForDoor: doorTime })
+                });
+                fetch(`${gameApiUrl}/finish/${currentGameId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ status: 'completed' })
+                });
+            }
+
             showLeaderboard();
           }
         }
@@ -1714,6 +1879,22 @@ document.addEventListener("DOMContentLoaded", () => {
       
       const failSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-spooky-forest-wind-1228.mp3");
       failSound.play().catch(() => {});
+
+      // Horror Visual Effect: Blood splatter
+      spawnParticles(window.innerWidth / 2, window.innerHeight / 2, "#941818", 50);
+      createToast("Wrong answer. They smell your fear.", "error");
+      
+      // Screen shake effect for mistake
+      document.body.style.animation = "shake 0.5s ease";
+      setTimeout(() => document.body.style.animation = "", 500);
+
+      if (currentGameId) {
+          fetch(`${gameApiUrl}/progress/${currentGameId}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify({ mistakesAdded: 1 })
+          });
+      }
 
       setTimeout(() => {
         isButtonDisabled = false;
@@ -1733,24 +1914,39 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 1000);
     }
 
-    function showLeaderboard() {
+    async function showLeaderboard() {
       const totalTime = Math.floor((Date.now() - startTime) / 1000);
       totalTimeDisplay.textContent = totalTime;
-      leaderboardTableBody.innerHTML = "";
-
-      const topicDoorTimes = doorTimes.filter((doorTime) => doorTime.topic === currentTopic);
-      topicDoorTimes.sort((a, b) => a.time - b.time);
-
-      topicDoorTimes.forEach((doorTime) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${doorTime.topic.charAt(0).toUpperCase() + doorTime.topic.slice(1)} Door ${doorTime.door}</td>
-          <td>${doorTime.time} seconds</td>
-        `;
-        leaderboardTableBody.appendChild(row);
-      });
-
+      leaderboardTableBody.innerHTML = "<tr><td colspan='3'>Loading Global Leaderboard...</td></tr>";
       leaderboardModal.style.display = "flex";
+
+      try {
+          const res = await fetch(`${gameApiUrl}/leaderboard`);
+          const data = await res.json();
+          leaderboardTableBody.innerHTML = "";
+          
+          data.forEach((entry, index) => {
+              const row = document.createElement("tr");
+              // highlight the top winner slightly differently
+              if (index === 0) row.style.color = "gold";
+              else if (index === 1) row.style.color = "silver";
+              else if (index === 2) row.style.color = "#cd7f32";
+
+              row.innerHTML = `
+                <td>#${index + 1} - ${entry.username}</td>
+                <td>${entry.language.toUpperCase()} (x${entry.difficulty})</td>
+                <td>${entry.timeTaken}s (${entry.mistakes} mistakes)</td>
+              `;
+              leaderboardTableBody.appendChild(row);
+          });
+
+          if (data.length === 0) {
+              leaderboardTableBody.innerHTML = "<tr><td colspan='3'>No global escapes yet. Be the first!</td></tr>";
+          }
+      } catch (err) {
+          console.error(err);
+          leaderboardTableBody.innerHTML = "<tr><td colspan='3'>Could not load leaderboard. The connection is dead.</td></tr>";
+      }
     }
 
     // Event Listeners
