@@ -4,7 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const challengeModal = document.getElementById("challenge-modal");
   const challengeTitle = document.getElementById("challenge-title");
   const challengeDescription = document.getElementById("challenge-description");
-  const codeInput = document.getElementById("code-input");
+  const codeEditorContainer = document.getElementById("code-editor-container");
+  let editorInstance = null;
   const submitCodeButton = document.getElementById("submit-code");
   const codeResult = document.getElementById("code-result");
   const closeModal = document.getElementById("close-modal");
@@ -23,6 +24,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeDashboardModal = document.getElementById("close-dashboard-modal");
   const particleContainer = document.getElementById("particle-container");
   const toastContainer = document.getElementById("toast-container");
+
+  // Initialize Monaco Editor
+  require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
+  require(['vs/editor/editor.main'], function () {
+      monaco.editor.defineTheme('horrorTheme', {
+          base: 'vs-dark',
+          inherit: true,
+          rules: [
+              { token: 'comment', foreground: '555555', fontStyle: 'italic' },
+              { token: 'keyword', foreground: '941818', fontStyle: 'bold' },
+              { token: 'string', foreground: 'ff4444' },
+              { token: 'number', foreground: 'cc0000' },
+              { token: 'identifier', foreground: 'cccccc' },
+              { token: 'operator', foreground: '941818' },
+          ],
+          colors: {
+              'editor.background': '#1a0b0b', // Deep dark blood-red tinted background
+              'editor.foreground': '#dddddd',
+              'editorLineNumber.foreground': '#444444',
+              'editorCursor.foreground': '#ff0000',
+              'editor.selectionBackground': '#4c0000',
+              'editor.lineHighlightBackground': '#2a0b0b',
+          }
+      });
+  });
 
   // Auth and API
   const token = localStorage.getItem("token");
@@ -1704,9 +1730,26 @@ document.addEventListener("DOMContentLoaded", () => {
       isButtonDisabled = false;
       challengeTitle.textContent = challenge.title;
       challengeDescription.textContent = challenge.description;
-      codeInput.value = "";
       codeResult.textContent = "";
       hintContainer.style.display = "none";
+      
+      // Initialize or update Monaco Editor
+      if (!editorInstance && window.monaco) {
+          editorInstance = monaco.editor.create(codeEditorContainer, {
+              value: "",
+              language: currentTopic === 'html' ? 'html' : currentTopic === 'css' ? 'css' : 'javascript',
+              theme: 'horrorTheme',
+              automaticLayout: true,
+              minimap: { enabled: false },
+              fontSize: 16,
+              fontFamily: 'Courier New, monospace',
+              scrollBeyondLastLine: false,
+              roundedSelection: false,
+          });
+      } else if (editorInstance) {
+          monaco.editor.setModelLanguage(editorInstance.getModel(), currentTopic === 'html' ? 'html' : currentTopic === 'css' ? 'css' : 'javascript');
+          editorInstance.setValue(""); // Clear previous input
+      }
 
       // Clear previous MCQ options if any
       const existingOptions = document.getElementById("mcq-options");
@@ -1727,7 +1770,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Set up UI based on challenge type
       if (challenge.type === "mcq") {
-        codeInput.style.display = "none";
+        codeEditorContainer.style.display = "none";
         submitCodeButton.style.display = "none";
         codeResult.style.display = "none";
 
@@ -1751,8 +1794,8 @@ document.addEventListener("DOMContentLoaded", () => {
           optionsContainer.appendChild(optionButton);
         });
       } else if (challenge.type === "fillInTheBlank") {
-        codeInput.placeholder = "Fill in the blank(s)";
-        codeInput.style.display = "block";
+        if (editorInstance) editorInstance.setValue("// Fill in the blank(s) here...");
+        codeEditorContainer.style.display = "block";
         submitCodeButton.style.display = "block";
         codeResult.style.display = "block";
 
@@ -1760,7 +1803,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (isButtonDisabled) return;
           isButtonDisabled = true;
 
-          const userAnswer = codeInput.value.trim();
+          const userAnswer = editorInstance ? editorInstance.getValue().replace("// Fill in the blank(s) here...", "").trim() : "";
           if (userAnswer === challenge.correctAnswer) {
             handleCorrectAnswer();
           } else {
@@ -1768,8 +1811,8 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         };
       } else if (challenge.type === "debug") {
-        codeInput.placeholder = "Fix the code...";
-        codeInput.style.display = "block";
+        if (editorInstance) editorInstance.setValue("// Fix the code...\n");
+        codeEditorContainer.style.display = "block";
         submitCodeButton.style.display = "block";
         codeResult.style.display = "block";
 
@@ -1777,8 +1820,8 @@ document.addEventListener("DOMContentLoaded", () => {
           if (isButtonDisabled) return;
           isButtonDisabled = true;
 
-          const userCode = codeInput.value;
-          if (userCode === challenge.correctAnswer) {
+          const userCode = editorInstance ? editorInstance.getValue().replace("// Fix the code...\n", "").trim() : "";
+          if (userCode === challenge.correctAnswer.trim()) {
             handleCorrectAnswer();
           } else {
             handleIncorrectAnswer();
