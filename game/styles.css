@@ -505,3 +505,17 @@ body {
   height: 100%;
   object-fit: cover;
 }
+
+/* CRT Glitch Effect (Wrong Answer) */
+@keyframes crtGlitch {
+  0% { transform: translate(0) skew(0deg); filter: blur(0); }
+  20% { transform: translate(-10px, 10px) skew(-3deg); filter: blur(3px) hue-rotate(90deg) contrast(200%); }
+  40% { transform: translate(10px, -10px) skew(3deg); filter: blur(2px) invert(100%); }
+  60% { transform: translate(-10px, 10px) skew(-1deg); filter: blur(4px) opacity(50%); }
+  80% { transform: translate(10px, -10px) skew(2deg); filter: blur(2px) hue-rotate(-90deg) contrast(150%); }
+  100% { transform: translate(0) skew(0deg); filter: blur(0); }
+}
+
+.glitch-active {
+  animation: crtGlitch 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both !important;
+}

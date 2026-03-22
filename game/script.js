@@ -1,4 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Dynamic Lighting Flashlight Effect
+  const lightingOverlay = document.getElementById("dynamic-lighting");
+  if (lightingOverlay) {
+      document.addEventListener("mousemove", (e) => {
+          requestAnimationFrame(() => {
+              lightingOverlay.style.background = `radial-gradient(circle at ${e.clientX}px ${e.clientY}px, transparent 150px, rgba(0, 0, 0, 0.95) 1000px)`;
+          });
+      });
+  }
+
   // DOM Elements
   const doorsContainer = document.getElementById("doors");
   const challengeModal = document.getElementById("challenge-modal");
@@ -209,6 +219,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // Difficulty / Mistakes handling
   let mistakeCount = 0;
 
+  // Scary Sounds
+  const heartbeatSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-heartbeat-fast-3415.mp3");
+  heartbeatSound.loop = true;
+  let isHeartbeatPlaying = false;
+
   // Game State Variables
   let timeRemaining;
   let timerInterval;
@@ -248,6 +263,15 @@ document.addEventListener("DOMContentLoaded", () => {
         timeRemaining--;
         updateTimerDisplay();
 
+        // Accelerating heartbeat
+        if (timeRemaining <= 30 && timeRemaining > 0) {
+            if (!isHeartbeatPlaying) {
+                heartbeatSound.play().catch(e => console.log(e));
+                isHeartbeatPlaying = true;
+            }
+            heartbeatSound.playbackRate = 1.0 + ((30 - timeRemaining) / 15);
+        }
+
         if (timeRemaining <= 0) {
           clearInterval(timerInterval);
           isTimerRunning = false;
@@ -273,6 +297,12 @@ document.addEventListener("DOMContentLoaded", () => {
     clearInterval(timerInterval);
     isTimerRunning = false;
     timerContainer.style.display = "none";
+    
+    if (isHeartbeatPlaying) {
+        heartbeatSound.pause();
+        heartbeatSound.currentTime = 0;
+        isHeartbeatPlaying = false;
+    }
   }
 
   function resetTimer() {
@@ -1725,12 +1755,38 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    // Typewriter state tracking
+    let typeWriterTimeout = null;
+    let typeSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-keyboard-typing-1386.mp3");
+    typeSound.loop = true;
+
     function openChallengeModal(challenge) {
       // Reset modal state
       isButtonDisabled = false;
       challengeTitle.textContent = challenge.title;
-      challengeDescription.textContent = challenge.description;
       codeResult.textContent = "";
+      
+      // Stop and clear any previous typing
+      if (typeWriterTimeout) clearTimeout(typeWriterTimeout);
+      challengeDescription.textContent = "";
+      
+      // Terminal Typewriter Effect
+      const descText = challenge.description;
+      let charIndex = 0;
+      typeSound.play().catch(() => {});
+
+      function typeWriter() {
+          if (charIndex < descText.length) {
+              challengeDescription.textContent += descText.charAt(charIndex);
+              charIndex++;
+              typeWriterTimeout = setTimeout(typeWriter, 30); // 30ms speed
+          } else {
+              typeSound.pause();
+              typeSound.currentTime = 0;
+          }
+      }
+      typeWriter();
+
       hintContainer.style.display = "none";
       
       // Initialize or update Monaco Editor
@@ -1843,7 +1899,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const successSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-magical-coin-win-1936.mp3");
       successSound.play().catch(() => {});
 
-      spawnParticles(window.innerWidth / 2, window.innerHeight / 2, "lightgreen", 20);
+      // Epic Red Door Explosion instead of generic green dots
+      const activeDoorButton = document.querySelector('.door[data-topic="' + currentTopic + '"]');
+      if (activeDoorButton) {
+          const rect = activeDoorButton.getBoundingClientRect();
+          spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, "#ff0000", 60);
+          spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, "#000000", 40);
+      } else {
+          spawnParticles(window.innerWidth / 2, window.innerHeight / 2, "#ff0000", 50);
+      }
+      
       createToast("Challenge completed. You survive another minute.", "success");
 
       setTimeout(() => {
@@ -1924,12 +1989,17 @@ document.addEventListener("DOMContentLoaded", () => {
       failSound.play().catch(() => {});
 
       // Horror Visual Effect: Blood splatter
-      spawnParticles(window.innerWidth / 2, window.innerHeight / 2, "#941818", 50);
+      spawnParticles(window.innerWidth / 2, window.innerHeight / 2, "#941818", 80);
       createToast("Wrong answer. They smell your fear.", "error");
       
-      // Screen shake effect for mistake
+      // Screen shake effect + CRT Glitch
       document.body.style.animation = "shake 0.5s ease";
-      setTimeout(() => document.body.style.animation = "", 500);
+      document.body.classList.add("glitch-active");
+      
+      setTimeout(() => {
+          document.body.style.animation = "";
+          document.body.classList.remove("glitch-active");
+      }, 500);
 
       if (currentGameId) {
           fetch(`${gameApiUrl}/progress/${currentGameId}`, {
