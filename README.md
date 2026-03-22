@@ -1,8 +1,6 @@
 # 🚪 Escape Room: The Coding Challenge 🎮
 
-Welcome to the **Escape Room Coding Game**! This is a full-stack, immersive web application where players must solve programming challenges to escape a horror-themed room. 
-
-![Escape Room Preview](public/preview.png) *(Preview of the game)*
+Welcome to the **Escape Room Coding Game**! This is a full-stack, immersive web application where players must solve programming challenges to escape a horror-themed room.
 
 ---
 
