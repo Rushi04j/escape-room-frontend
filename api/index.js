@@ -35,9 +35,13 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/game", require("./routes/game"));
 
 // ✅ Default route for testing
-app.get("/", (req, res) => {
+app.get("/ping", (req, res) => {
     res.send("🚀 Server is running!");
 });
+
+// ✅ Serve static files from the root directory for local dev
+const path = require("path");
+app.use(express.static(path.join(__dirname, "..")));
 
 // ✅ Start the server
 const PORT = process.env.PORT || 5000;

@@ -1,56 +1,94 @@
-Escape Room Coding Game – Landing Page
+# 🚪 Escape Room: The Coding Challenge 🎮
 
-This repository contains the landing page for the Escape Room Coding Game project.
+Welcome to the **Escape Room Coding Game**! This is a full-stack, immersive web application where players must solve programming challenges to escape a horror-themed room. 
 
-The landing page serves as the entry point to the application, providing users with an introduction to the game, onboarding flow, and navigation to authentication and gameplay. It is intentionally maintained as a separate repository to reflect real-world separation between static marketing/onboarding content and core application logic.
+![Escape Room Preview](public/preview.png) *(Preview of the game)*
 
-Tech Stack
-HTML5
-CSS3
-JavaScript (ES6+)
+---
 
-Responsibilities
+## ✨ Features
+- **Immersive User Experience**: A horror-themed UI with custom cursors, jump scares, background audio, and atmospheric lighting.
+- **Dynamic Coding Challenges**: Built-in coding challenges ranging from JavaScript to HTML basics, powered by a customized Monaco Editor.
+- **Full Authentication**: Secure signup and login system using JWTs and bcrypt.
+- **Leaderboard & Dashboard**: Track your stats, best times, and overall performance.
+- **Consolidated Architecture**: Both the frontend GUI and backend API (`Express.js`) are housed within this single repository, making it trivially easy to deploy to serverless platforms like Vercel.
 
-Acts as the first point of interaction for users
-Introduces the game concept and user flow
-Handles navigation to authentication and gameplay
-Provides a lightweight, fast-loading static experience
+---
 
-Project Structure (High Level)
-/landing-page
-├── index.html
-├── css/
-├── js/
-└── assets/
+## 🛠️ Tech Stack
+- **Frontend**: Pure HTML5, CSS3, JavaScript (ES6+), Monaco Editor.
+- **Backend API**: Node.js, Express.js.
+- **Database**: MongoDB (Mongoose).
+- **Authentication**: JSON Web Tokens (JWT) & bcrypt.
+- **Hosting**: Vercel (Serverless Functions via `api/index.js`).
 
-Design Notes
+---
 
-Built using pure HTML, CSS, and JavaScript to keep the landing page lightweight and fast.
-No backend logic is handled in this repository.
-Authentication and game logic are managed by the backend and frontend repositories respectively.
-This separation allows the landing page to be deployed independently using static hosting.
+## 📂 Project Structure
+```text
+/
+├── api/                  # Express.js backend logic and routes
+│   ├── models/           # MongoDB schemas (User, Game State, etc.)
+│   ├── routes/           # API Endpoints (Auth, Game)
+│   └── index.js          # Main Express app entrypoint & Vercel serverless handler
+├── game/                 # Core game interface & logic
+│   ├── index.html        # Game UI
+│   ├── script.js         # Game mechanics & challenge handlers
+│   └── styles.css        # Game themes & animations
+├── public/               # Public assets (images, audio)
+├── index.html            # Landing page (Auth UI)
+├── script.js             # Landing page UI interactions
+├── styles.css            # Landing page styling
+├── vercel.json           # Vercel deployment & routing config
+└── package.json          # Node dependencies
+```
 
-Deployment
+---
 
-The landing page is suitable for deployment on static hosting platforms such as:
-Vercel
-Netlify
-GitHub Pages
-Relationship to Main Project
+## 🚀 Running Locally
 
-This landing page is part of the Escape Room Coding Game project, which is structured across multiple repositories:
+To run the full stack (frontend and backend) on your local machine:
 
-Landing Page → User entry point and onboarding
-Frontend Game → Core gameplay logic and UI
-Backend API → Authentication and data persistence
-For the complete project overview and architecture, refer to the main repository.
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Rushi04j/escape-room-frontend.git
+   cd escape-room-frontend
+   ```
 
-Purpose
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-This repository demonstrates:
-Clean static frontend development
-Separation of concerns in application architecture
-Real-world project organization practices
+3. **Configure Environment Variables**:
+   Create a `.env` file in the root directory and add your MongoDB connection string:
+   ```env
+   MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/Cluster0?retryWrites=true&w=majority
+   JWT_SECRET=your_super_secret_key_here
+   PORT=5000
+   ```
 
-License
-This project is for educational and demonstration purposes.
+4. **Start the server**:
+   ```bash
+   npm start
+   ```
+   *The server will boot up the Express API on port 5000 and serve the frontend statically. Navigate to `http://localhost:5000` to start playing!*
+
+---
+
+## 🌐 Deployment (Vercel + GitHub)
+
+This application is fully optimized for **Vercel** with zero-configuration needed other than environment variables!
+
+### 1. Link GitHub to Vercel
+1. Push this code to the `master` branch on GitHub.
+2. Go to your [Vercel Dashboard](https://vercel.com/dashboard).
+3. Click **Add New** > **Project** and import this repository.
+4. **Important**: Under "Environment Variables", make sure to add `MONGO_URI` before deploying.
+5. Hit **Deploy**! Vercel will automatically read the `vercel.json` file and map all `/api/*` traffic to the backend serverless functions, while serving the HTML/CSS/JS frontend as static assets.
+
+### 2. Automatic Deployments
+Since Vercel is connected to exactly this GitHub repository, **any future `git push` to the `master` branch will automatically trigger a new deployment**. 
+
+---
+*Created by [Rushi04j](https://github.com/Rushi04j).*

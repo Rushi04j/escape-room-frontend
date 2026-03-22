@@ -55,7 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!token) {
     window.location.href = "/"; // Redirect to landing page
   }
-  const gameApiUrl = "/api/game";
+  const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+  const gameApiUrl = (isLocal && window.location.port !== "5000") ? "http://localhost:5000/api/game" : "/api/game";
   let currentGameId = null;
 
   // Generic Systems

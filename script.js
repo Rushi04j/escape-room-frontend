@@ -19,7 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const hiddenMessages = document.querySelectorAll(".hidden-message")
 
   // Backend and Frontend URLs
-  const backendUrl = "/api/auth";
+  const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+  const backendUrl = (isLocal && window.location.port !== "5000") ? "http://localhost:5000/api/auth" : "/api/auth";
   const frontendUrl = "/game/index.html";
 
   // Custom Alert Modal Function
