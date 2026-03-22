@@ -24,7 +24,8 @@ body {
   width: 90%;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  margin-top: 140px;
+  margin-top: 150px;
+  transform: scale(0.9);
 }
 
 @keyframes fadeIn {
